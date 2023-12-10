@@ -35,4 +35,4 @@
 
 Check folder `output/instagram/ideas` for some of the samples generated previously.
 
-![Example of post about Cannabis Tolerance](output\instagram\ideas\2023-12-09-20-32-00-cannabis-tolerance-is-a-real-thing\idea-0-page-2-post.png)
+![Example of post about Cannabis Tolerance](example.png)
