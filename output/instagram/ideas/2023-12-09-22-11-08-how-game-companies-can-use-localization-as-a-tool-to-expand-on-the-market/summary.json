@@ -1,0 +1,69 @@
+{
+    "seed": "How game companies can use localization as a tool to expand on the market?",
+    "output": "output/instagram/ideas/2023-12-09-22-11-08-how-game-companies-can-use-localization-as-a-tool-to-expand-on-the-market",
+    "ideas": [
+        {
+            "first_page": {
+                "image": "A globe with different game icons representing various countries, in a minimalist art style",
+                "image_alt": "Globe with game icons representing various countries",
+                "title": "\ud83c\udf0d\ud83c\udfae Game Localization: Your Gateway to Global Success \ud83d\ude80"
+            },
+            "pages": [
+                {
+                    "image": "An illustration of a game being translated into different languages, with speech bubbles in various languages coming out from a game console",
+                    "image_alt": "Game being translated into different languages",
+                    "title": "What is Game Localization? \ud83e\udd14",
+                    "text": "Game localization is the process of adapting a video game to a specific locale or market. It involves translation of text, adaptation of cultural references, conversion of units and currencies, and more, to make the game more accessible and enjoyable for players from different regions.",
+                    "footer": "Source: International Game Developers Association (IGDA)"
+                },
+                {
+                    "image": "A bar graph showing the increase in game sales after localization",
+                    "image_alt": "Graph showing increase in game sales after localization",
+                    "title": "The Impact of Localization \ud83d\udcc8",
+                    "text": "Game localization can significantly boost your game's sales. By making your game accessible to a wider audience, you can tap into new markets, increase your player base, and improve your revenue. According to a report by Newzoo, localized games see a 128% increase in downloads and a 26% increase in revenue on average.",
+                    "footer": "Source: Newzoo Global Games Market Report"
+                },
+                {
+                    "image": "A map pinpointing countries with high game revenues that are non-English speaking",
+                    "image_alt": "Map showing high-revenue game markets that are non-English speaking",
+                    "title": "Potential Markets for Localization \ud83c\udf0f",
+                    "text": "There are numerous non-English speaking markets with high game revenues, including China, Japan, South Korea, Germany, and Russia. By localizing your game for these markets, you can significantly boost your game's global reach and profitability.",
+                    "footer": "Source: Newzoo Global Games Market Report"
+                },
+                {
+                    "image": "A checklist for game localization process",
+                    "image_alt": "Checklist for game localization",
+                    "title": "Getting Started with Localization \ud83d\udcdd",
+                    "text": "Getting started with game localization involves several steps: 1) Research your target markets, 2) Translate and localize your game content, 3) Test your localized game, 4) Market your game in the target markets. Remember, localization is more than just translation - it's about adapting your game to fit the cultural context of your target market.",
+                    "footer": "Source: IGDA Best Practices for Game Localization"
+                }
+            ],
+            "keywords": [
+                "#GameLocalization",
+                "#GameDevelopment",
+                "#GlobalGaming",
+                "#GameTranslation",
+                "#GameIndustry",
+                "#GamingMarket",
+                "#VideoGames",
+                "#GameSales"
+            ]
+        }
+    ],
+    "posts": [
+        {
+            "first_page": "output\\instagram\\ideas\\2023-12-09-22-11-08-how-game-companies-can-use-localization-as-a-tool-to-expand-on-the-market\\idea-0-page-0-post.png",
+            "pages": [
+                "output\\instagram\\ideas\\2023-12-09-22-11-08-how-game-companies-can-use-localization-as-a-tool-to-expand-on-the-market\\idea-0-page-1-post.png",
+                "output\\instagram\\ideas\\2023-12-09-22-11-08-how-game-companies-can-use-localization-as-a-tool-to-expand-on-the-market\\idea-0-page-2-post.png",
+                "output\\instagram\\ideas\\2023-12-09-22-11-08-how-game-companies-can-use-localization-as-a-tool-to-expand-on-the-market\\idea-0-page-3-post.png",
+                "output\\instagram\\ideas\\2023-12-09-22-11-08-how-game-companies-can-use-localization-as-a-tool-to-expand-on-the-market\\idea-0-page-4-post.png"
+            ]
+        }
+    ],
+    "summary": [
+        [
+            "\ud83c\udf0d\ud83c\udfae Game Localization: Your Gateway to Global Success \ud83d\ude80\nA globe with different game icons representing various countries, in a minimalist art style\nGlobe with game icons representing various countries\n\nWhat is Game Localization? \ud83e\udd14\nGame localization is the process of adapting a video game to a specific locale or market. It involves translation of text, adaptation of cultural references, conversion of units and currencies, and more, to make the game more accessible and enjoyable for players from different regions.\nAn illustration of a game being translated into different languages, with speech bubbles in various languages coming out from a game console\nGame being translated into different languages\nSource: International Game Developers Association (IGDA)\n\nThe Impact of Localization \ud83d\udcc8\nGame localization can significantly boost your game's sales. By making your game accessible to a wider audience, you can tap into new markets, increase your player base, and improve your revenue. According to a report by Newzoo, localized games see a 128% increase in downloads and a 26% increase in revenue on average.\nA bar graph showing the increase in game sales after localization\nGraph showing increase in game sales after localization\nSource: Newzoo Global Games Market Report\n\nPotential Markets for Localization \ud83c\udf0f\nThere are numerous non-English speaking markets with high game revenues, including China, Japan, South Korea, Germany, and Russia. By localizing your game for these markets, you can significantly boost your game's global reach and profitability.\nA map pinpointing countries with high game revenues that are non-English speaking\nMap showing high-revenue game markets that are non-English speaking\nSource: Newzoo Global Games Market Report\n\nGetting Started with Localization \ud83d\udcdd\nGetting started with game localization involves several steps: 1) Research your target markets, 2) Translate and localize your game content, 3) Test your localized game, 4) Market your game in the target markets. Remember, localization is more than just translation - it's about adapting your game to fit the cultural context of your target market.\nA checklist for game localization process\nChecklist for game localization\nSource: IGDA Best Practices for Game Localization\n\n\n#GameLocalization, #GameDevelopment, #GlobalGaming, #GameTranslation, #GameIndustry, #GamingMarket, #VideoGames, #GameSales\n"
+        ]
+    ]
+}

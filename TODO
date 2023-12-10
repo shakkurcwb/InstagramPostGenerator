@@ -1,0 +1,1 @@
+- Prompt Limitation: it is not filling the response properly, sometimes it just set placeholders for urls or references, but no actual content (GPT-4 has no issues)

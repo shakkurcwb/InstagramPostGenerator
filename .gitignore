@@ -1,0 +1,11 @@
+Include/
+Lib/
+Scripts/
+pyvenv.cfg
+**/*/__pycache__/
+__pycache__/
+.vscode/
+.env
+_old/
+output/_old
+output/_old2

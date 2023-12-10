@@ -1,0 +1,74 @@
+{
+    "seed": "How cannabis impact your learning and memory?",
+    "output": "output/instagram/ideas/2023-12-09-21-44-46-how-cannabis-impact-your-learning-and-memory",
+    "ideas": [
+        {
+            "first_page": {
+                "image": "https://example.com/cannabis_learning_memory_image.jpg",
+                "image_alt": "Image of a person studying with cannabis leaves in the background",
+                "title": "How Cannabis Impacts Your Learning and Memory"
+            },
+            "pages": [
+                {
+                    "image": "https://example.com/cannabis_brain_image.jpg",
+                    "image_alt": "Image of a brain with cannabis leaves surrounding it",
+                    "title": "The Science Behind Cannabis and Memory",
+                    "text": "Cannabis contains compounds called cannabinoids, which interact with receptors in the brain. One specific cannabinoid, THC, is responsible for the psychoactive effects of cannabis. When THC binds to receptors in the hippocampus, a region of the brain involved in memory formation, it can disrupt the normal processes of learning and memory.",
+                    "footer": "Source: National Institute on Drug Abuse"
+                },
+                {
+                    "image": "https://example.com/cannabis_learning_image.jpg",
+                    "image_alt": "Image of a person studying with cannabis leaves in the background",
+                    "title": "Effects on Learning",
+                    "text": "Research suggests that cannabis use can impair learning abilities, especially when used during adolescence. Regular cannabis use has been associated with decreased attention span, reduced cognitive flexibility, and difficulty in acquiring new information. These effects can have a significant impact on academic performance and overall learning potential.",
+                    "footer": "Source: Harvard Health Publishing"
+                },
+                {
+                    "image": "https://example.com/cannabis_memory_image.jpg",
+                    "image_alt": "Image of a person holding a memory card with cannabis leaves on it",
+                    "title": "Effects on Memory",
+                    "text": "Short-term memory impairment is a common side effect of cannabis use. THC affects the functioning of the hippocampus, making it harder to encode and retrieve new information. Long-term cannabis use may also lead to structural changes in the brain, specifically in the hippocampus, which can further impact memory formation and recall.",
+                    "footer": "Source: National Institute on Drug Abuse"
+                },
+                {
+                    "image": "https://example.com/cannabis_brain_development_image.jpg",
+                    "image_alt": "Image of a brain with cannabis leaves and a teenager",
+                    "title": "Adolescent Brain Development",
+                    "text": "The adolescent brain is particularly vulnerable to the effects of cannabis. Research suggests that cannabis use during this critical period can disrupt brain development, including the formation of neural connections and the pruning of unnecessary synapses. These disruptions can have long-term consequences on cognitive function and memory.",
+                    "footer": "Source: American Psychological Association"
+                },
+                {
+                    "image": "https://example.com/cannabis_learning_strategies_image.jpg",
+                    "image_alt": "Image of a person using effective learning strategies",
+                    "title": "Maximizing Learning Potential",
+                    "text": "If you choose to use cannabis, it's important to be mindful of its potential impact on learning and memory. Consider using cannabis responsibly and in moderation, especially during crucial learning periods. Additionally, adopting effective learning strategies such as active studying, spaced repetition, and adequate sleep can help mitigate the negative effects of cannabis on learning and memory.",
+                    "footer": "Source: University of California, Berkeley"
+                }
+            ],
+            "keywords": [
+                "#CannabisEducation",
+                "#LearningAndMemory",
+                "#CannabisEffects",
+                "#BrainFunction",
+                "#AdolescentDevelopment"
+            ]
+        }
+    ],
+    "posts": [
+        {
+            "first_page": "output\\instagram\\ideas\\2023-12-09-21-44-46-how-cannabis-impact-your-learning-and-memory\\idea-0-page-0-post.png",
+            "pages": [
+                "output\\instagram\\ideas\\2023-12-09-21-44-46-how-cannabis-impact-your-learning-and-memory\\idea-0-page-1-post.png",
+                "output\\instagram\\ideas\\2023-12-09-21-44-46-how-cannabis-impact-your-learning-and-memory\\idea-0-page-2-post.png",
+                "output\\instagram\\ideas\\2023-12-09-21-44-46-how-cannabis-impact-your-learning-and-memory\\idea-0-page-3-post.png",
+                "output\\instagram\\ideas\\2023-12-09-21-44-46-how-cannabis-impact-your-learning-and-memory\\idea-0-page-4-post.png",
+                "output\\instagram\\ideas\\2023-12-09-21-44-46-how-cannabis-impact-your-learning-and-memory\\idea-0-page-5-post.png"
+            ]
+        }
+    ],
+    "summary": [
+        [
+            "How Cannabis Impacts Your Learning and Memory\nhttps://example.com/cannabis_learning_memory_image.jpg\nImage of a person studying with cannabis leaves in the background\n\nThe Science Behind Cannabis and Memory\nCannabis contains compounds called cannabinoids, which interact with receptors in the brain. One specific cannabinoid, THC, is responsible for the psychoactive effects of cannabis. When THC binds to receptors in the hippocampus, a region of the brain involved in memory formation, it can disrupt the normal processes of learning and memory.\nhttps://example.com/cannabis_brain_image.jpg\nImage of a brain with cannabis leaves surrounding it\nSource: National Institute on Drug Abuse\n\nEffects on Learning\nResearch suggests that cannabis use can impair learning abilities, especially when used during adolescence. Regular cannabis use has been associated with decreased attention span, reduced cognitive flexibility, and difficulty in acquiring new information. These effects can have a significant impact on academic performance and overall learning potential.\nhttps://example.com/cannabis_learning_image.jpg\nImage of a person studying with cannabis leaves in the background\nSource: Harvard Health Publishing\n\nEffects on Memory\nShort-term memory impairment is a common side effect of cannabis use. THC affects the functioning of the hippocampus, making it harder to encode and retrieve new information. Long-term cannabis use may also lead to structural changes in the brain, specifically in the hippocampus, which can further impact memory formation and recall.\nhttps://example.com/cannabis_memory_image.jpg\nImage of a person holding a memory card with cannabis leaves on it\nSource: National Institute on Drug Abuse\n\nAdolescent Brain Development\nThe adolescent brain is particularly vulnerable to the effects of cannabis. Research suggests that cannabis use during this critical period can disrupt brain development, including the formation of neural connections and the pruning of unnecessary synapses. These disruptions can have long-term consequences on cognitive function and memory.\nhttps://example.com/cannabis_brain_development_image.jpg\nImage of a brain with cannabis leaves and a teenager\nSource: American Psychological Association\n\nMaximizing Learning Potential\nIf you choose to use cannabis, it's important to be mindful of its potential impact on learning and memory. Consider using cannabis responsibly and in moderation, especially during crucial learning periods. Additionally, adopting effective learning strategies such as active studying, spaced repetition, and adequate sleep can help mitigate the negative effects of cannabis on learning and memory.\nhttps://example.com/cannabis_learning_strategies_image.jpg\nImage of a person using effective learning strategies\nSource: University of California, Berkeley\n\n\n#CannabisEducation, #LearningAndMemory, #CannabisEffects, #BrainFunction, #AdolescentDevelopment\n"
+        ]
+    ]
+}
