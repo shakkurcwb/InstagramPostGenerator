@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from datetime import datetime
 
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageColor
 
 from src.helpers import slugfy
 from src.openai import OpenAI
@@ -15,6 +15,8 @@ ROBOTO_FONT = "fonts/Roboto-Regular.ttf"
 ROBOTO_24 = ImageFont.truetype(ROBOTO_FONT, 24)
 ROBOTO_32 = ImageFont.truetype(ROBOTO_FONT, 32)
 ROBOTO_64 = ImageFont.truetype(ROBOTO_FONT, 64)
+
+TEMPLATES_FOLDER = "output/instagram/templates"
 
 INSTAGRAM_POST_WIDTH = 1080
 INSTAGRAM_POST_HEIGHT = 1080
@@ -153,9 +155,16 @@ LAYOUTS = {
 
 
 class ImageGenerator:
-    def __init__(self, width: int, height: int, color: str = "white"):
-        self._image = Image.new("RGB", (width, height), color)
-        self._draw = ImageDraw.Draw(self.image)
+    def __init__(self, width: int, height: int, color: str = None, template: str = None):
+        # Create a new image with the given size
+        self._image = Image.new("RGBA", (width, height), color).convert("RGBA")
+
+        if template:
+            # Open the template image
+            self.template = Image.open(f"{TEMPLATES_FOLDER}/{template}.png").convert("RGBA")
+
+            # Paste the template image into the new image
+            self._image.paste(self.template, (0, 0), self.template)
 
     @property
     def image(self):
@@ -163,14 +172,14 @@ class ImageGenerator:
 
     @property
     def draw(self):
-        return self._draw
+        return ImageDraw.Draw(self.image, "RGBA")
 
     def save(self, filename: str):
         self.image.save(filename)
 
 
 class Box:
-    def __init__(self, x1: int, y1: int, x2: int, y2: int, border_color: str = "black", border_width: int = 1):
+    def __init__(self, x1: int, y1: int, x2: int, y2: int, border_color: str = "black", border_width: int = 1, fill_color: str = "white", transparency: int = 255):
         self.x1 = x1
         self.y1 = y1
         self.x2 = x2
@@ -179,27 +188,64 @@ class Box:
         self.outline = border_color
         self.width = border_width
 
-    def draw(self, draw: ImageDraw):
-        draw.rectangle([(self.x1, self.y1), (self.x2, self.y2)], outline=self.outline, width=self.width)
+        self.fill = fill_color
+        self.alpha = transparency  # Transparency value (0-255)
+
+    def draw(self, draw: ImageDraw, image: Image):
+        raise NotImplementedError
+
+    def draw_box(self, draw: ImageDraw, image: Image):
+        if self.fill:
+            draw.rectangle([(self.x1, self.y1), (self.x2, self.y2)], outline=self.outline, width=self.width, fill=self._parse_fill_color())
+        else:
+            draw.rectangle([(self.x1, self.y1), (self.x2, self.y2)], outline=self.outline, width=self.width)
+
+        return
+
+        # @todo: make sure the box has the background of the template
+        args = {
+            "outline": self.outline,
+            "width": self.width,
+        }
+
+        if self.fill:
+            args["fill"] = self._parse_fill_color()
+
+        # copy image
+        image_copy: Image = image.copy()
+
+        # resize image copy
+        image_copy = image_copy.resize((self.x2 - self.x1, self.y2 - self.y1))
+
+        # create rectangle on the new image
+        draw = ImageDraw.Draw(image_copy)
+
+        # draw rectangle on the new image
+        draw.rectangle([(self.x1, self.y1), (self.x2, self.y2)], **args)
+
+        # paste rectangle on the original image
+        image.paste(image_copy, (0, 0), image_copy)
+
+    def _parse_fill_color(self):
+        if not self.fill:
+            return (0, 0, 0, 0)
+
+        red, green, blue = ImageColor.getrgb(self.fill)
+
+        return (red, green, blue, self.alpha)
 
 
-class TextBox:
-    def __init__(self, x1: int, y1: int, x2: int, y2: int, text: str, text_color: str = "black", font: ImageFont = None, wrapped_lines: bool = True, border_color: str = "white", border_width: int = 1):
-        self.x1 = x1
-        self.y1 = y1
-        self.x2 = x2
-        self.y2 = y2
-
-        self.outline = border_color
-        self.width = border_width
+class TextBox(Box):
+    def __init__(self, x1: int, y1: int, x2: int, y2: int, text: str, text_color: str = "black", font: ImageFont = None, wrapped_lines: bool = True, border_color: str = "black", border_width: int = 1, fill_color: str = "white", transparency: int = 255):
+        super().__init__(x1, y1, x2, y2, border_color, border_width, fill_color, transparency)
 
         self.text = text
         self.color = text_color
         self.font = font
         self.wrapped_lines = wrapped_lines
 
-    def draw(self, draw: ImageDraw):
-        draw.rectangle([(self.x1, self.y1), (self.x2, self.y2)], outline=self.outline, width=self.width)
+    def draw(self, draw: ImageDraw, image: Image):
+        self.draw_box(draw, image)
 
         if not self.wrapped_lines:
             draw.text((self.x1 + SPACING, self.y1 + SPACING), self.text, fill=self.color, font=self.font)
@@ -230,25 +276,20 @@ class TextBox:
         return len(max(wrapped_lines, key=len))
 
 
-class ImageBox:
-    def __init__(self, x1: int, y1: int, x2: int, y2: int, image_path: str, border_color: str = "black", border_width: int = 1):
-        self.x1 = x1
-        self.y1 = y1
-        self.x2 = x2
-        self.y2 = y2
+class ImageBox(Box):
+    def __init__(self, x1: int, y1: int, x2: int, y2: int, image_path: str, border_color: str = "black", border_width: int = 1, fill_color: str = "white", transparency: int = 255):
+        super().__init__(x1, y1, x2, y2, border_color, border_width, fill_color, transparency)
 
         self.image_path = image_path
         self.image = Image.open(self.image_path)
 
-        self.outline = border_color
-        self.width = border_width
-
     def draw(self, draw: ImageDraw, image: Image):
-        draw.rectangle([(self.x1, self.y1), (self.x2, self.y2)], outline=self.outline, width=self.width)
+        self.draw_box(draw, image)
 
-        resized_image = self.image.resize((self.x2 - self.x1, self.y2 - self.y1))
+        if self.image:
+            resized_image = self.image.resize((self.x2 - self.x1, self.y2 - self.y1))
 
-        image.paste(resized_image, (self.x1, self.y1))
+            image.paste(resized_image, (self.x1, self.y1))
 
 
 class InstagramPostGenerator:
@@ -289,12 +330,13 @@ class InstagramPostGenerator:
     CHOICES = 1
     TEMPERATURE = 0.5
 
-    def __init__(self, seed, output = None):
+    def __init__(self, seed: str, template: str = None, reuse_ideas_filepath: str = None):
         self.seed = seed
+        self.template = template
         self.skip_ideas_generation = False
 
-        if output:
-            self.output = output
+        if reuse_ideas_filepath:
+            self.output = reuse_ideas_filepath
 
             self.path = Path(self.output)
 
@@ -303,7 +345,7 @@ class InstagramPostGenerator:
 
             self.skip_ideas_generation = True
 
-        if not output:
+        if not reuse_ideas_filepath:
             self.slug = slugfy(self.seed)
 
             self.timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
@@ -312,13 +354,10 @@ class InstagramPostGenerator:
 
             self.path = Path(self.output)
 
-            self._create_folder()
+            self.path.mkdir(parents=True, exist_ok=True)
 
-    def _create_folder(self):
-        self.path.mkdir(parents=True, exist_ok=True)
-
-        if not self.path.exists():
-            raise Exception(f"Folder {self.output} could not be created.")
+            if not self.path.exists():
+                raise Exception(f"Folder {self.output} could not be created.")
 
     def generate(self):
         prompt = self._prepare_prompt()
@@ -388,21 +427,12 @@ class InstagramPostGenerator:
         posts = []
 
         for idx, idea in enumerate(ideas):
-            post = self._generate_post(idx, idea)
-
-            posts.append(post)
+            posts.append({
+                "first_page": self._generate_first_page(idx, idea),
+                "pages": self._generate_pages(idx, idea),
+            })
 
         return posts
-
-    def _generate_post(self, idx: int, idea: dict) -> dict:
-        first_page = self._generate_first_page(idx, idea)
-
-        pages = self._generate_pages(idx, idea)
-
-        return {
-            "first_page": first_page,
-            "pages": pages,
-        }
 
     def _generate_first_page(self, idx: int, idea: dict) -> dict:
         head = {
@@ -411,10 +441,13 @@ class InstagramPostGenerator:
             'x2': INSTAGRAM_POST_HEIGHT - SPACING,
             'y2': SPACING * 5,
             'text': idea['first_page']['title'],
+            'text_color': 'white',
             'font': ROBOTO_64,
             'wrapped_lines': True,
             'border_color': 'black',
             'border_width': 1,
+            "fill_color": "red",
+            "transparency": 0,
         }
 
         image = {
@@ -422,20 +455,18 @@ class InstagramPostGenerator:
             'y1': SPACING * 7,
             'x2': INSTAGRAM_POST_WIDTH - SPACING,
             'y2': INSTAGRAM_POST_HEIGHT - SPACING,
-            'text': idea['first_page']['image'],
-            'font': ROBOTO_32,
-            'wrapped_lines': True,
+            'image_path': 'output/test.png',
             'border_color': 'black',
             'border_width': 1,
         }
 
         h = TextBox(**head)
-        i = TextBox(**image)
+        i = ImageBox(**image)
 
-        g = ImageGenerator(INSTAGRAM_POST_WIDTH, INSTAGRAM_POST_HEIGHT)
+        g = ImageGenerator(INSTAGRAM_POST_WIDTH, INSTAGRAM_POST_HEIGHT, template=self.template)
 
-        h.draw(g.draw)
-        i.draw(g.draw)
+        h.draw(g.draw, g.image)
+        i.draw(g.draw, g.image)
 
         filename = self.path / f"idea-{idx}-page-0-post.png"
 
@@ -453,10 +484,13 @@ class InstagramPostGenerator:
                 'x2': INSTAGRAM_POST_HEIGHT - SPACING,
                 'y2': SPACING * 5,
                 'text': page['title'],
+                'text_color': 'white',
                 'font': ROBOTO_64,
                 'wrapped_lines': True,
-                'border_color': 'black',
+                'border_color': 'white',
                 'border_width': 1,
+                "fill_color": "black",
+                "transparency": 128,
             }
 
             text = {
@@ -465,10 +499,13 @@ class InstagramPostGenerator:
                 'x2': INSTAGRAM_POST_WIDTH - SPACING,
                 'y2': INSTAGRAM_POST_HEIGHT - (SPACING * 5),
                 'text': page['text'],
+                'text_color': 'white',
                 'font': ROBOTO_32,
                 'wrapped_lines': True,
-                'border_color': 'black',
+                'border_color': 'white',
                 'border_width': 1,
+                "fill_color": "black",
+                "transparency": 128,
             }
 
             image = {
@@ -477,10 +514,13 @@ class InstagramPostGenerator:
                 'x2': INSTAGRAM_POST_WIDTH - SPACING,
                 'y2': INSTAGRAM_POST_HEIGHT - (SPACING * 5),
                 'text': page['image'],
+                'text_color': 'white',
                 'font': ROBOTO_32,
                 'wrapped_lines': True,
-                'border_color': 'black',
+                'border_color': 'white',
                 'border_width': 1,
+                "fill_color": "black",
+                "transparency": 128,
             }
 
             footer = {
@@ -489,10 +529,13 @@ class InstagramPostGenerator:
                 'x2': INSTAGRAM_POST_WIDTH - SPACING,
                 'y2': INSTAGRAM_POST_HEIGHT - SPACING,
                 'text': page['footer'],
+                'text_color': 'white',
                 'font': ROBOTO_24,
                 'wrapped_lines': True,
-                'border_color': 'black',
+                'border_color': 'white',
                 'border_width': 1,
+                "fill_color": "black",
+                "transparency": 128,
             }
 
             h = TextBox(**head)
@@ -500,12 +543,12 @@ class InstagramPostGenerator:
             # i = TextBox(**image)
             f = TextBox(**footer)
 
-            g = ImageGenerator(INSTAGRAM_POST_WIDTH, INSTAGRAM_POST_HEIGHT)
+            g = ImageGenerator(INSTAGRAM_POST_WIDTH, INSTAGRAM_POST_HEIGHT, template=self.template)
 
-            h.draw(g.draw)
-            t.draw(g.draw)
-            # i.draw(g.draw)
-            f.draw(g.draw)
+            h.draw(g.draw, g.image)
+            t.draw(g.draw, g.image)
+            # i.draw(g.draw, g.image)
+            f.draw(g.draw, g.image)
 
             filename = self.path / f"idea-{idx}-page-{page_count + 1}-post.png"
 
