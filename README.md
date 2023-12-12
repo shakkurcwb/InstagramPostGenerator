@@ -23,7 +23,7 @@
 
 1. Extend `InstagramPostGenerator` class;
 2. Define the business model you are representing;
-3. Instanciate `CannabisEducatorInstagramPostGenerator(seed)` where `seed` is the post subject;
+3. Instanciate `InstagramPostGenerator(seed)` where `seed` is the post subject;
 4. Invoke `generator.generate()` for the process to start.
 
 #### Implementation Examples:
