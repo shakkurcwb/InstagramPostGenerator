@@ -6,7 +6,7 @@ from datetime import datetime
 
 from PIL import Image, ImageDraw, ImageFont
 
-from src.helpers import generate_chat, slugfy
+from src.helpers import slugfy
 from src.openai import OpenAI
 
 
@@ -170,7 +170,7 @@ class ImageGenerator:
 
 
 class Box:
-    def __init__(self, x1: int, y1: int, x2: int, y2: int, border_color: str = "blank", border_width: int = 1):
+    def __init__(self, x1: int, y1: int, x2: int, y2: int, border_color: str = "black", border_width: int = 1):
         self.x1 = x1
         self.y1 = y1
         self.x2 = x2
@@ -231,7 +231,7 @@ class TextBox:
 
 
 class ImageBox:
-    def __init__(self, x1: int, y1: int, x2: int, y2: int, image_path: str, border_color: str = "blank", border_width: int = 1):
+    def __init__(self, x1: int, y1: int, x2: int, y2: int, image_path: str, border_color: str = "black", border_width: int = 1):
         self.x1 = x1
         self.y1 = y1
         self.x2 = x2
@@ -353,7 +353,7 @@ class InstagramPostGenerator:
         ideas = []
 
         if not self.skip_ideas_generation:
-            response = generate_chat(
+            response = OpenAI().get_chat_completion(
                 messages=prompt,
                 model=OpenAI.MODEL_GPT_4,
                 max_tokens=self.MAX_TOKENS,
