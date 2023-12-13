@@ -9,9 +9,17 @@ from PIL import Image, ImageDraw, ImageFont, ImageColor
 from src.helpers import slugfy
 from src.openai import OpenAI
 
+NOTO_EMOJI_FONT = "fonts/NotoColorEmoji-Regular.ttf"
+NOTO_EMOJI_24 = ImageFont.truetype(NOTO_EMOJI_FONT, 109)
+NOTO_EMOJI_32 = ImageFont.truetype(NOTO_EMOJI_FONT, 109)
+NOTO_EMOJI_64 = ImageFont.truetype(NOTO_EMOJI_FONT, 109)
+
+SYMBOLA_FONT = "fonts/Symbola.ttf"
+SYMBOLA_24 = ImageFont.truetype(SYMBOLA_FONT, 24)
+SYMBOLA_32 = ImageFont.truetype(SYMBOLA_FONT, 32)
+SYMBOLA_64 = ImageFont.truetype(SYMBOLA_FONT, 64)
 
 ROBOTO_FONT = "fonts/Roboto-Regular.ttf"
-
 ROBOTO_24 = ImageFont.truetype(ROBOTO_FONT, 24)
 ROBOTO_32 = ImageFont.truetype(ROBOTO_FONT, 32)
 ROBOTO_64 = ImageFont.truetype(ROBOTO_FONT, 64)
@@ -21,6 +29,7 @@ TEMPLATES_FOLDER = "output/instagram/templates"
 INSTAGRAM_POST_WIDTH = 1080
 INSTAGRAM_POST_HEIGHT = 1080
 
+TEXT_SPACING = 30
 SPACING = 50
 
 LAYOUTS = {
@@ -32,7 +41,6 @@ LAYOUTS = {
             'y2': SPACING * 5,
             'text': 'Head',
             'font': ROBOTO_64,
-            'wrapped_lines': True,
             'border_color': 'black',
             'border_width': 5,
         },
@@ -43,7 +51,6 @@ LAYOUTS = {
             'y2': INSTAGRAM_POST_HEIGHT - (SPACING * 7),
             'text': 'Body',
             'font': ROBOTO_32,
-            'wrapped_lines': True,
             'border_color': 'black',
             'border_width': 5,
         },
@@ -54,7 +61,6 @@ LAYOUTS = {
             'y2': INSTAGRAM_POST_HEIGHT - SPACING,
             'text': 'Footer',
             'font': ROBOTO_32,
-            'wrapped_lines': True,
             'border_color': 'black',
             'border_width': 5,
         },
@@ -67,7 +73,6 @@ LAYOUTS = {
             'y2': SPACING * 5,
             'text': 'Head',
             'font': ROBOTO_64,
-            'wrapped_lines': True,
             'border_color': 'black',
             'border_width': 5,
         },
@@ -78,7 +83,6 @@ LAYOUTS = {
             'y2': INSTAGRAM_POST_HEIGHT - SPACING,
             'text': 'Body',
             'font': ROBOTO_32,
-            'wrapped_lines': True,
             'border_color': 'black',
             'border_width': 5,
         },
@@ -91,7 +95,6 @@ LAYOUTS = {
             'y2': SPACING * 5,
             'text': 'Title',
             'font': ROBOTO_64,
-            'wrapped_lines': True,
             'border_color': 'black',
             'border_width': 5,
         },
@@ -102,7 +105,6 @@ LAYOUTS = {
             'y2': INSTAGRAM_POST_HEIGHT - SPACING,
             'text': 'Text',
             'font': ROBOTO_32,
-            'wrapped_lines': True,
             'border_color': 'black',
             'border_width': 5,
         },
@@ -124,7 +126,6 @@ LAYOUTS = {
             'y2': SPACING * 5,
             'text': 'Title',
             'font': ROBOTO_64,
-            'wrapped_lines': True,
             'border_color': 'black',
             'border_width': 5,
         },
@@ -135,7 +136,6 @@ LAYOUTS = {
             'y2': INSTAGRAM_POST_HEIGHT - SPACING,
             'text': 'Text1',
             'font': ROBOTO_32,
-            'wrapped_lines': True,
             'border_color': 'black',
             'border_width': 5,
         },
@@ -146,7 +146,6 @@ LAYOUTS = {
             'y2': INSTAGRAM_POST_HEIGHT - SPACING,
             'text': 'Text2',
             'font': ROBOTO_32,
-            'wrapped_lines': True,
             'border_color': 'black',
             'border_width': 5,
         },
@@ -154,32 +153,47 @@ LAYOUTS = {
 }
 
 
-class ImageGenerator:
+class ImageBuilder:
     def __init__(self, width: int, height: int, color: str = None, template: str = None):
         # Create a new image with the given size
-        self._image = Image.new("RGBA", (width, height), color).convert("RGBA")
+        self.image = Image.new("RGBA", (width, height), color)
 
         if template:
             # Open the template image
-            self.template = Image.open(f"{TEMPLATES_FOLDER}/{template}.png").convert("RGBA")
+            self.template = Image.open(f"{TEMPLATES_FOLDER}/{template}").convert("RGBA")
 
             # Paste the template image into the new image
-            self._image.paste(self.template, (0, 0), self.template)
-
-    @property
-    def image(self):
-        return self._image
+            self.paste(self.template, 0, 0, self.template)
 
     @property
     def draw(self):
         return ImageDraw.Draw(self.image, "RGBA")
+
+    def copy(self):
+        return self.image.copy()
+
+    def crop(self, x1: int, y1: int, x2: int, y2: int):
+        return self.image.crop((x1, y1, x2, y2))
+
+    def paste(self, image: Image, x: int, y: int, mask: Image = None):
+        self.image.paste(image, (x, y), mask)
 
     def save(self, filename: str):
         self.image.save(filename)
 
 
 class Box:
-    def __init__(self, x1: int, y1: int, x2: int, y2: int, border_color: str = "black", border_width: int = 1, fill_color: str = "white", transparency: int = 255):
+    def __init__(
+        self,
+        x1: int,
+        y1: int,
+        x2: int,
+        y2: int,
+        border_color: str = None,
+        border_width: int = 0,
+        fill_color: str = None,
+        transparency: int = 0,
+    ):
         self.x1 = x1
         self.y1 = y1
         self.x2 = x2
@@ -191,73 +205,86 @@ class Box:
         self.fill = fill_color
         self.alpha = transparency  # Transparency value (0-255)
 
-    def draw(self, draw: ImageDraw, image: Image):
-        raise NotImplementedError
+    def draw(self, builder: ImageBuilder):
+        image_copy = builder.copy()
 
-    def draw_box(self, draw: ImageDraw, image: Image):
-        if self.fill:
-            draw.rectangle([(self.x1, self.y1), (self.x2, self.y2)], outline=self.outline, width=self.width, fill=self._parse_fill_color())
-        else:
-            draw.rectangle([(self.x1, self.y1), (self.x2, self.y2)], outline=self.outline, width=self.width)
+        xy = [(self.x1, self.y1), (self.x2, self.y2)]
 
-        return
-
-        # @todo: make sure the box has the background of the template
         args = {
             "outline": self.outline,
             "width": self.width,
         }
 
         if self.fill:
-            args["fill"] = self._parse_fill_color()
+            fill_color = self._parse_fill_color()
+            args["fill"] = fill_color
 
-        # copy image
-        image_copy: Image = image.copy()
+        # Draw the filled rectangle with transparency on a separate image
+        fill_image = Image.new("RGBA", image_copy.size)
+        fill_draw = ImageDraw.Draw(fill_image)
+        fill_draw.rectangle(xy, **args)
 
-        # resize image copy
-        image_copy = image_copy.resize((self.x2 - self.x1, self.y2 - self.y1))
+        # Paste the filled rectangle onto our copy of the original image so that it's transparent
+        image_copy.paste(fill_image, (0, 0), fill_image)
 
-        # create rectangle on the new image
-        draw = ImageDraw.Draw(image_copy)
-
-        # draw rectangle on the new image
-        draw.rectangle([(self.x1, self.y1), (self.x2, self.y2)], **args)
-
-        # paste rectangle on the original image
-        image.paste(image_copy, (0, 0), image_copy)
+        # Paste the copy of the original image with the filled rectangle back onto the original image
+        builder.paste(image_copy, 0, 0)
 
     def _parse_fill_color(self):
-        if not self.fill:
-            return (0, 0, 0, 0)
-
         red, green, blue = ImageColor.getrgb(self.fill)
 
         return (red, green, blue, self.alpha)
 
 
 class TextBox(Box):
-    def __init__(self, x1: int, y1: int, x2: int, y2: int, text: str, text_color: str = "black", font: ImageFont = None, wrapped_lines: bool = True, border_color: str = "black", border_width: int = 1, fill_color: str = "white", transparency: int = 255):
+    def __init__(
+        self,
+        x1: int,
+        y1: int,
+        x2: int,
+        y2: int,
+        text: str,
+        text_color: str = "black",
+        font: ImageFont = None,
+        font_fallback: ImageFont = None,
+        border_color: str = "black",
+        border_width: int = 1,
+        fill_color: str = "white",
+        transparency: int = 255,
+    ):
         super().__init__(x1, y1, x2, y2, border_color, border_width, fill_color, transparency)
 
         self.text = text
         self.color = text_color
         self.font = font
-        self.wrapped_lines = wrapped_lines
+        self.font_fallback = font_fallback if font_fallback else font
 
-    def draw(self, draw: ImageDraw, image: Image):
-        self.draw_box(draw, image)
-
-        if not self.wrapped_lines:
-            draw.text((self.x1 + SPACING, self.y1 + SPACING), self.text, fill=self.color, font=self.font)
-            return
+    def draw(self, builder: ImageBuilder):
+        super().draw(builder)
 
         # Split the text into lines that fit within the specified max_width in pixels
-        lines = textwrap.wrap(self.text, width=self._wrap_text(draw))
+        lines = textwrap.wrap(self.text, width=self._wrap_text(builder.draw))
 
-        current_y = self.y1 + SPACING
-        for line in lines:
-            draw.text((self.x1 + SPACING, current_y), line, fill=self.color, font=self.font)
-            current_y += SPACING
+        current_y = self.y1 + TEXT_SPACING
+        for idx, text in enumerate(lines):
+            # Reset current_x for each new line
+            current_x = self.x1 + TEXT_SPACING
+
+            for char in text:
+                # Select font based on ASCII value (support emojis)
+                font = self.font if ord(char) < 255 else self.font_fallback
+
+                # Get the width of the character
+                char_width = builder.draw.textlength(char, font=font)
+
+                # Draw the character onto the image
+                builder.draw.text((current_x, current_y), char, fill=self.color, font=font, embedded_color=True)
+
+                # Increment current_x by the width of the character
+                current_x += char_width
+
+            # Increment current_y by the height of the font
+            current_y += font.size + 5
 
     def _wrap_text(self, draw: ImageDraw):
         words = self.text.split()
@@ -266,7 +293,7 @@ class TextBox(Box):
 
         for word in words[1:]:
             test_line = line + ' ' + word
-            if draw.textlength(test_line, font=self.font) <= self.x2 - self.x1 - SPACING * 2:
+            if draw.textlength(test_line, font=self.font) <= self.x2 - self.x1 - TEXT_SPACING * 2:
                 line = test_line
             else:
                 wrapped_lines.append(line)
@@ -280,16 +307,17 @@ class ImageBox(Box):
     def __init__(self, x1: int, y1: int, x2: int, y2: int, image_path: str, border_color: str = "black", border_width: int = 1, fill_color: str = "white", transparency: int = 255):
         super().__init__(x1, y1, x2, y2, border_color, border_width, fill_color, transparency)
 
-        self.image_path = image_path
-        self.image = Image.open(self.image_path)
+        self.image = Image.open(image_path)
 
-    def draw(self, draw: ImageDraw, image: Image):
-        self.draw_box(draw, image)
+        if not self.image:
+            raise Exception(f"Image {image_path} could not be found.")
 
-        if self.image:
-            resized_image = self.image.resize((self.x2 - self.x1, self.y2 - self.y1))
+    def draw(self, builder: ImageBuilder):
+        super().draw(builder)
 
-            image.paste(resized_image, (self.x1, self.y1))
+        resized_image = self.image.resize((self.x2 - self.x1, self.y2 - self.y1))
+
+        builder.paste(resized_image, self.x1, self.y1)
 
 
 class InstagramPostGenerator:
@@ -417,8 +445,6 @@ class InstagramPostGenerator:
             raise Exception("GPT Response has no choices.")
 
         for idx, content in enumerate(choices):
-            # sanitized_content = content.replace("\\n", "\n")
-
             ideas.append(json.loads(str(content)))
 
         return ideas
@@ -443,11 +469,11 @@ class InstagramPostGenerator:
             'text': idea['first_page']['title'],
             'text_color': 'white',
             'font': ROBOTO_64,
-            'wrapped_lines': True,
+            'font_fallback': NOTO_EMOJI_64,
             'border_color': 'black',
             'border_width': 1,
-            "fill_color": "red",
-            "transparency": 0,
+            "fill_color": "blue",
+            "transparency": 64,
         }
 
         image = {
@@ -463,14 +489,14 @@ class InstagramPostGenerator:
         h = TextBox(**head)
         i = ImageBox(**image)
 
-        g = ImageGenerator(INSTAGRAM_POST_WIDTH, INSTAGRAM_POST_HEIGHT, template=self.template)
+        builder = ImageBuilder(INSTAGRAM_POST_WIDTH, INSTAGRAM_POST_HEIGHT, template=self.template)
 
-        h.draw(g.draw, g.image)
-        i.draw(g.draw, g.image)
+        h.draw(builder)
+        i.draw(builder)
 
         filename = self.path / f"idea-{idx}-page-0-post.png"
 
-        g.save(filename)
+        builder.save(filename)
 
         return str(filename)
 
@@ -486,11 +512,11 @@ class InstagramPostGenerator:
                 'text': page['title'],
                 'text_color': 'white',
                 'font': ROBOTO_64,
-                'wrapped_lines': True,
+                'font_fallback': NOTO_EMOJI_64,
                 'border_color': 'white',
                 'border_width': 1,
-                "fill_color": "black",
-                "transparency": 128,
+                "fill_color": "blue",
+                "transparency": 64,
             }
 
             text = {
@@ -501,26 +527,11 @@ class InstagramPostGenerator:
                 'text': page['text'],
                 'text_color': 'white',
                 'font': ROBOTO_32,
-                'wrapped_lines': True,
+                'font_fallback': NOTO_EMOJI_32,
                 'border_color': 'white',
                 'border_width': 1,
-                "fill_color": "black",
-                "transparency": 128,
-            }
-
-            image = {
-                'x1': INSTAGRAM_POST_WIDTH // 2 + SPACING,
-                'y1': SPACING * 7,
-                'x2': INSTAGRAM_POST_WIDTH - SPACING,
-                'y2': INSTAGRAM_POST_HEIGHT - (SPACING * 5),
-                'text': page['image'],
-                'text_color': 'white',
-                'font': ROBOTO_32,
-                'wrapped_lines': True,
-                'border_color': 'white',
-                'border_width': 1,
-                "fill_color": "black",
-                "transparency": 128,
+                "fill_color": "blue",
+                "transparency": 64,
             }
 
             footer = {
@@ -531,28 +542,26 @@ class InstagramPostGenerator:
                 'text': page['footer'],
                 'text_color': 'white',
                 'font': ROBOTO_24,
-                'wrapped_lines': True,
+                'font_fallback': NOTO_EMOJI_24,
                 'border_color': 'white',
                 'border_width': 1,
-                "fill_color": "black",
-                "transparency": 128,
+                "fill_color": "blue",
+                "transparency": 64,
             }
 
             h = TextBox(**head)
             t = TextBox(**text)
-            # i = TextBox(**image)
             f = TextBox(**footer)
 
-            g = ImageGenerator(INSTAGRAM_POST_WIDTH, INSTAGRAM_POST_HEIGHT, template=self.template)
+            builder = ImageBuilder(INSTAGRAM_POST_WIDTH, INSTAGRAM_POST_HEIGHT, template=self.template)
 
-            h.draw(g.draw, g.image)
-            t.draw(g.draw, g.image)
-            # i.draw(g.draw, g.image)
-            f.draw(g.draw, g.image)
+            h.draw(builder)
+            t.draw(builder)
+            f.draw(builder)
 
             filename = self.path / f"idea-{idx}-page-{page_count + 1}-post.png"
 
-            g.save(filename)
+            builder.save(filename)
 
             pages.append(str(filename))
 
@@ -612,7 +621,7 @@ class TestInstagramPostTemplates:
         body = TextBox(**LAYOUTS['head_body_footer']['body'])
         footer = TextBox(**LAYOUTS['head_body_footer']['footer'])
 
-        generator = ImageGenerator(INSTAGRAM_POST_WIDTH, INSTAGRAM_POST_HEIGHT, "white")
+        generator = ImageBuilder(INSTAGRAM_POST_WIDTH, INSTAGRAM_POST_HEIGHT, "white")
 
         header.draw(generator.draw)
         body.draw(generator.draw)
@@ -624,7 +633,7 @@ class TestInstagramPostTemplates:
         header = TextBox(**LAYOUTS['head_body']['head'])
         body = TextBox(**LAYOUTS['head_body']['body'])
 
-        generator = ImageGenerator(INSTAGRAM_POST_WIDTH, INSTAGRAM_POST_HEIGHT, "white")
+        generator = ImageBuilder(INSTAGRAM_POST_WIDTH, INSTAGRAM_POST_HEIGHT, "white")
 
         header.draw(generator.draw)
         body.draw(generator.draw)
@@ -636,7 +645,7 @@ class TestInstagramPostTemplates:
         text = TextBox(**LAYOUTS['title_text_image']['text'])
         image = ImageBox(**LAYOUTS['title_text_image']['image'])
 
-        generator = ImageGenerator(INSTAGRAM_POST_WIDTH, INSTAGRAM_POST_HEIGHT, "white")
+        generator = ImageBuilder(INSTAGRAM_POST_WIDTH, INSTAGRAM_POST_HEIGHT, "white")
 
         title.draw(generator.draw)
         text.draw(generator.draw)
@@ -649,7 +658,7 @@ class TestInstagramPostTemplates:
         text1 = TextBox(**LAYOUTS['title_text1_text2']['text1'])
         text2 = TextBox(**LAYOUTS['title_text1_text2']['text2'])
 
-        generator = ImageGenerator(INSTAGRAM_POST_WIDTH, INSTAGRAM_POST_HEIGHT, "white")
+        generator = ImageBuilder(INSTAGRAM_POST_WIDTH, INSTAGRAM_POST_HEIGHT, "white")
 
         title.draw(generator.draw)
         text1.draw(generator.draw)
