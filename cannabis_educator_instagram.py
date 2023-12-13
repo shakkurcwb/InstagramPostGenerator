@@ -12,7 +12,7 @@ def run():
 
     debug_file = "output/instagram/ideas/2023-12-09-21-30-52-cannabis-impact-on-economy"
 
-    generator = CannabisEducatorInstagramPostGenerator(seed, template="3", reuse_ideas_filepath=debug_file)
+    generator = CannabisEducatorInstagramPostGenerator(seed, template="6.png", reuse_ideas_filepath=debug_file)
 
     summary = generator.generate()
 

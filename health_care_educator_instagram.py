@@ -10,9 +10,7 @@ class HealthCareEducatorInstagramPostGenerator(InstagramPostGenerator):
 def run():
     seed = "How home-care based agencies impact society and the economy?"
 
-    # debug_file = "output/instagram/ideas/2023-12-09-20-32-00-cannabis-tolerance-is-a-real-thing"
-
-    generator = HealthCareEducatorInstagramPostGenerator(seed, output=None)
+    generator = HealthCareEducatorInstagramPostGenerator(seed, template="3.png")
 
     summary = generator.generate()
 

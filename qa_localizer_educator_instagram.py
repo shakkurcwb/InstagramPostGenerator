@@ -10,9 +10,7 @@ class QaLocalizerEducatorInstagramPostGenerator(InstagramPostGenerator):
 def run():
     seed = "How game companies can use localization as a tool to expand on the market?"
 
-    # debug_file = "output/instagram/ideas/2023-12-09-21-57-22-how-quality-assurance-localization-affect-gamers-around-the-world"
-
-    generator = QaLocalizerEducatorInstagramPostGenerator(seed, output=None)
+    generator = QaLocalizerEducatorInstagramPostGenerator(seed, template="7.png")
 
     summary = generator.generate()
 
