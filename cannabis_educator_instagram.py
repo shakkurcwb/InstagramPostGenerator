@@ -10,9 +10,9 @@ class CannabisEducatorInstagramPostGenerator(InstagramPostGenerator):
 def run():
     seed = "How cannabis impact your learning and memory?"
 
-    # debug_file = "output/instagram/ideas/2023-12-09-20-32-00-cannabis-tolerance-is-a-real-thing"
+    debug_file = "output/instagram/ideas/2023-12-09-21-30-52-cannabis-impact-on-economy"
 
-    generator = CannabisEducatorInstagramPostGenerator(seed, output=None)
+    generator = CannabisEducatorInstagramPostGenerator(seed, template="6.png", reuse_ideas_filepath=debug_file)
 
     summary = generator.generate()
 

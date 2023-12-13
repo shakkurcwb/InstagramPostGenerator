@@ -1,1 +1,3 @@
-- Prompt Limitation: it is not filling the response properly, sometimes it just set placeholders for urls or references, but no actual content (GPT-4 has no issues)
+- @todo: ability to set vertical align and text direction for text box;
+- @todo: ability to add image with text (and box, lol);
+- @fix: emoji are not being displayed with Noto Emoji Color font;
