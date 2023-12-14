@@ -6,7 +6,6 @@ from datetime import datetime
 
 from PIL import Image, ImageDraw, ImageFont, ImageColor
 
-from src.helpers import slugfy
 from src.openai import OpenAI
 
 NOTO_EMOJI_FONT = "fonts/NotoColorEmoji-Regular.ttf"
@@ -151,6 +150,24 @@ LAYOUTS = {
         },
     },
 }
+
+
+def slugfy(text):
+    """
+    Slugify a text.
+
+    :param text: str, The text to slugify.
+    """
+    # Convert the text to lowercase.
+    text = text.lower()
+
+    # Replace all non-alphanumeric characters with a hyphen.
+    text = re.sub(r"[^a-zA-Z0-9]+", "-", text)
+
+    # Remove any leading or trailing hyphens.
+    text = text.strip("-")
+
+    return text
 
 
 class ImageBuilder:
@@ -613,62 +630,3 @@ class InstagramPostGenerator:
             ])
 
         return "\n".join(summary)
-
-
-class TestInstagramPostTemplates:
-    def test_head_body_footer_template(self):
-        header = TextBox(**LAYOUTS['head_body_footer']['head'])
-        body = TextBox(**LAYOUTS['head_body_footer']['body'])
-        footer = TextBox(**LAYOUTS['head_body_footer']['footer'])
-
-        generator = ImageBuilder(INSTAGRAM_POST_WIDTH, INSTAGRAM_POST_HEIGHT, "white")
-
-        header.draw(generator.draw)
-        body.draw(generator.draw)
-        footer.draw(generator.draw)
-
-        generator.save('output/instagram/tests/test_head_body_footer_template.png')
-
-    def test_head_body_template(self):
-        header = TextBox(**LAYOUTS['head_body']['head'])
-        body = TextBox(**LAYOUTS['head_body']['body'])
-
-        generator = ImageBuilder(INSTAGRAM_POST_WIDTH, INSTAGRAM_POST_HEIGHT, "white")
-
-        header.draw(generator.draw)
-        body.draw(generator.draw)
-
-        generator.save('output/instagram/tests/test_head_body_template.png')
-
-    def test_title_text_image_template(self):
-        title = TextBox(**LAYOUTS['title_text_image']['title'])
-        text = TextBox(**LAYOUTS['title_text_image']['text'])
-        image = ImageBox(**LAYOUTS['title_text_image']['image'])
-
-        generator = ImageBuilder(INSTAGRAM_POST_WIDTH, INSTAGRAM_POST_HEIGHT, "white")
-
-        title.draw(generator.draw)
-        text.draw(generator.draw)
-        image.draw(generator.draw, generator.image)
-
-        generator.save('output/instagram/tests/test_title_text_image_template.png')
-
-    def test_title_text1_text2_template(self):
-        title = TextBox(**LAYOUTS['title_text1_text2']['title'])
-        text1 = TextBox(**LAYOUTS['title_text1_text2']['text1'])
-        text2 = TextBox(**LAYOUTS['title_text1_text2']['text2'])
-
-        generator = ImageBuilder(INSTAGRAM_POST_WIDTH, INSTAGRAM_POST_HEIGHT, "white")
-
-        title.draw(generator.draw)
-        text1.draw(generator.draw)
-        text2.draw(generator.draw)
-
-        generator.save('output/instagram/tests/test_title_text1_text2_template.png')
-
-
-if __name__ == '__main__':
-    TestInstagramPostTemplates().test_head_body_footer_template()
-    TestInstagramPostTemplates().test_head_body_template()
-    TestInstagramPostTemplates().test_title_text_image_template()
-    TestInstagramPostTemplates().test_title_text1_text2_template()
